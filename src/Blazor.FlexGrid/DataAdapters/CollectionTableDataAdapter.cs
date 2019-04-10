@@ -35,7 +35,15 @@ namespace Blazor.FlexGrid.DataAdapters
                 PageableOptions = tableDataSetOptions.PageableOptions,
                 SortingOptions = new SortingOptions(),
                 GridViewEvents = tableDataSetOptions.GridViewEvents,
-                GroupingOptions = new GroupingOptions()
+                GroupingOptions = new GroupingOptions(),
+                SearchOptions = new SearchOptions()
+                {
+                    ItemType = typeof(TItem),
+                    Keyword = null,
+                    SearchableProperties = typeof(TItem).GetProperties()
+                                    .Where(p => p.PropertyType.IsValueType || p.PropertyType == typeof(string))
+                                    .ToList()
+                }
             };
 
             return tableDataSet;

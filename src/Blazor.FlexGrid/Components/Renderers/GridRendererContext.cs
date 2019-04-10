@@ -40,7 +40,13 @@ namespace Blazor.FlexGrid.Components.Renderers
 
         public IReadOnlyCollection<PropertyInfo> GridItemProperties { get; }
 
+        public IReadOnlyCollection<PropertyInfo> GridItemDisplayableProperties { get; }
+
         public IReadOnlyCollection<PropertyInfo> GridItemCollectionProperties { get; }
+
+        public GridRowTemplatingInfo GridRowTemplatingInfo { get; set; }
+
+        public RenderFragment GridRowTemplates { get; set; }
 
         public ITableDataSet TableDataSet { get; }
 
@@ -65,7 +71,8 @@ namespace Blazor.FlexGrid.Components.Renderers
             }
 
             GridConfiguration = imutableGridRendererContext.GridConfiguration;
-            GridItemProperties = imutableGridRendererContext.GridItemProperties;
+            GridItemDisplayableProperties = imutableGridRendererContext.GridItemProperties;
+            GridItemProperties = imutableGridRendererContext.GridItemProperties.Where(p => !tableDataSet.ColumnsOptions.ExcludedColumns.Contains(p)).ToList();
             GridItemCollectionProperties = imutableGridRendererContext.GridEntityConfiguration.ClrTypeCollectionProperties;
             CssClasses = imutableGridRendererContext.CssClasses;
             PropertyValueAccessor = imutableGridRendererContext.GetPropertyValueAccessor;
@@ -73,14 +80,18 @@ namespace Blazor.FlexGrid.Components.Renderers
             RequestRerenderNotification = imutableGridRendererContext.RequestRerenderNotification;
             TableDataSet = tableDataSet ?? throw new ArgumentNullException(nameof(tableDataSet));
 
+
             TableDataSet.GroupingOptions.SetConfiguration(GridConfiguration?.GroupingOptions);
             TableDataSet.GroupingOptions.GroupableProperties = this.GridItemProperties.ToList();
+                        
 
             this.gridEntityConfiguration = imutableGridRendererContext.GridEntityConfiguration;
             this.valueFormatters = imutableGridRendererContext.ValueFormatters;
             this.specialColumnValues = imutableGridRendererContext.SpecialColumnValues;
             this.firstColumnName = GridItemProperties.First().Name;
             this.lastColumnName = GridItemProperties.Last().Name;
+
+            
         }
 
         public void OpenElement(string elementName)

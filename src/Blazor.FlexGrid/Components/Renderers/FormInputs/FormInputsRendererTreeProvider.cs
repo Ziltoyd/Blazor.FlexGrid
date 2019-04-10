@@ -18,7 +18,7 @@ namespace Blazor.FlexGrid.Components.Renderers.FormInputs
             var builder = formInputRendererBuilders.FirstOrDefault(b => b.IsSupportedDateType(filedType));
             if (builder is null)
             {
-                throw new InvalidOperationException($"Type {filedType.FullName} is not supported in edit forms");
+                    throw new InvalidOperationException($"Type {filedType.FullName} is not supported in edit forms");
             }
 
             return builder;

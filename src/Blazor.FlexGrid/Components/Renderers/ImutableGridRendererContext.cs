@@ -20,6 +20,7 @@ namespace Blazor.FlexGrid.Components.Renderers
 
         public IReadOnlyCollection<PropertyInfo> GridItemProperties { get; private set; }
 
+
         public ITypePropertyAccessor GetPropertyValueAccessor { get; }
 
         public IReadOnlyDictionary<string, IValueFormatter> ValueFormatters => valueFormatters;
@@ -93,6 +94,7 @@ namespace Blazor.FlexGrid.Components.Renderers
             GridItemProperties = propertiesListWithOrder.OrderBy(p => p.Order)
                 .Select(p => p.Prop)
                 .ToList();
+
         }
 
         public void SetRequestRendererNotification(Action requestRendererNotification)

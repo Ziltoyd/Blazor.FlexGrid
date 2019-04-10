@@ -19,6 +19,7 @@ namespace Blazor.FlexGrid.Components
     {
         private ITableDataSet tableDataSet;
         private bool dataAdapterWasEmptyInOnInit;
+        private GridRowTemplatingInfo gridRowTemplatingInfo;
 
         [Inject]
         private IGridRendererTreeBuilder GridRendererTreeBuilder { get; set; }
@@ -32,7 +33,7 @@ namespace Blazor.FlexGrid.Components
         [Inject]
         private ConventionsSet ConventionsSet { get; set; }
 
-
+        
 
         [Parameter] ITableDataAdapter DataAdapter { get; set; }
 
@@ -53,12 +54,17 @@ namespace Blazor.FlexGrid.Components
 
         [Parameter] Action<ItemClickedArgs> OnItemClicked { get; set; }
 
+        [Parameter] protected RenderFragment GridRowTemplates { get; set; }
+
         
 
 
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             base.BuildRenderTree(builder);
+
+            if (GridRowTemplates != null)
+                BuildRowTemplates(builder);
 
             var rendererTreeBuilder = new BlazorRendererTreeBuilder(builder);
             var gridContexts = RendererContextFactory.CreateContexts(tableDataSet);
@@ -88,6 +94,14 @@ namespace Blazor.FlexGrid.Components
                       .AddAttribute(nameof(NewItemCreated), NewItemCreated)
                       .CloseComponent();
             }
+        }
+
+        private void BuildRowTemplates(RenderTreeBuilder builder)
+        {
+            builder.OpenComponent(0, typeof(CascadingValue<GridRowTemplatingInfo>));
+            builder.AddAttribute(1, "Value", gridRowTemplatingInfo);
+            builder.AddAttribute(2, "ChildContent", GridRowTemplates);
+            builder.CloseComponent();
         }
 
         protected override async Task OnInitAsync()

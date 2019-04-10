@@ -1,4 +1,6 @@
-﻿using Blazor.FlexGrid.Demo.Client.GridConfigurations;
+﻿using Blazor.FlexGrid.DataAdapters;
+using Blazor.FlexGrid.Demo.Client.GridConfigurations;
+using Blazor.FlexGrid.Demo.Shared;
 using Blazor.FlexGrid.Permission;
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +27,7 @@ namespace Blazor.FlexGrid.Demo.Client
 
             services.AddSingleton<ICurrentUserPermission, TestCurrentUserPermission>();
             services.AddSingleton<IAuthorizationService, TestAuthorizationService>();
+
         }
 
         public void Configure(IComponentsApplicationBuilder app)

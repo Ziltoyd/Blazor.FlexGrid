@@ -16,6 +16,8 @@ namespace Blazor.FlexGrid.Components.Renderers.CreateItemForm
 
         public Action<TModel> SaveAction { get; set; }
 
+        public bool IsNotSupportedInputTypeSkipped => createItemOptions.IsNotSupportedInputTypeSkipped;
+
         public CreateItemFormViewModel(CreateItemOptions createItemOptions)
         {
             this.createItemOptions = createItemOptions ?? throw new ArgumentNullException(nameof(createItemOptions));

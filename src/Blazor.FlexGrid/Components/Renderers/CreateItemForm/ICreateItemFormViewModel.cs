@@ -14,6 +14,8 @@ namespace Blazor.FlexGrid.Components.Renderers.CreateItemForm
 
         Action<TModel> SaveAction { get; set; }
 
+        bool IsNotSupportedInputTypeSkipped { get; }
+
         void ValidateModel();
 
         void ClearModel();

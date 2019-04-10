@@ -24,11 +24,21 @@ namespace Blazor.FlexGrid.Components.Renderers
             if (rendererContext.TableDataSet.GroupingOptions.IsGroupingEnabled)
                 RenderGroupingFooterPart(rendererContext);
 
+            RenderQuickSearchFooterPart(rendererContext);
+
             rendererContext.OpenElement(HtmlTagNames.Div, "pagination-right");
             rendererContext.CloseElement();
+
+            if (rendererContext.TableDataSet.PageableOptions.IsPageSizeEditable)
+            {
+                RenderPageSizeEditingFooterPart(rendererContext);
+            }
+
             rendererContext.OpenElement(HtmlTagNames.Span, "pagination-page-status");
             rendererContext.AddContent($"{rendererContext.TableDataSet.PageInfoText()} of {rendererContext.TableDataSet.PageableOptions.TotalItemsCount}");
             rendererContext.CloseElement();
+            
+
             rendererContext.OpenElement(HtmlTagNames.Div, "pagination-buttons-wrapper");
 
             RenderButton(rendererContext, PaginationButtonType.First, previousButtonIsDisabled, "fas fa-angle-double-left");
@@ -39,6 +49,47 @@ namespace Blazor.FlexGrid.Components.Renderers
             rendererContext.CloseElement();
             rendererContext.CloseElement();
             //rendererContext.CloseElement();
+        }
+
+        private void RenderQuickSearchFooterPart(GridRendererContext rendererContext)
+        {
+            string keyword = rendererContext.TableDataSet.SearchOptions?.Keyword;
+
+            rendererContext.OpenElement(HtmlTagNames.Input, "quick-search");
+            rendererContext.AddAttribute(HtmlAttributes.Type, "text");
+            rendererContext.AddAttribute("placeholder", "Quick search");
+            if (!string.IsNullOrEmpty(keyword))
+                rendererContext.AddAttribute(HtmlAttributes.Value, keyword);
+            rendererContext.AddOnChangeEvent(() =>
+            BindMethods.GetEventHandlerValue((UIChangeEventArgs e) =>
+            {
+                rendererContext.TableDataSet.SearchOptions.Keyword = e.Value.ToString();
+                rendererContext.TableDataSet.GoToPage(0);
+                rendererContext.RequestRerenderNotification?.Invoke();
+            }));
+            rendererContext.CloseElement();
+        }
+
+        private void RenderPageSizeEditingFooterPart(GridRendererContext rendererContext)
+        {
+            rendererContext.OpenElement(HtmlTagNames.Select);
+            rendererContext.AddAttribute(HtmlAttributes.Value, rendererContext.TableDataSet.PageableOptions.PageSize);
+            rendererContext.AddOnChangeEvent(() =>
+                BindMethods.GetEventHandlerValue(async (UIChangeEventArgs e) =>
+                {
+                    rendererContext.TableDataSet.PageableOptions.PageSize = Int32.Parse(e.Value.ToString());
+                    await rendererContext.TableDataSet.GoToPage(0);
+                    rendererContext.RequestRerenderNotification?.Invoke();
+                    
+                }));
+            foreach(var option in rendererContext.TableDataSet.PageableOptions.PageSizeOptions)
+            {
+                rendererContext.OpenElement(HtmlTagNames.Option);
+                rendererContext.AddAttribute(HtmlAttributes.Value, option);
+                rendererContext.AddContent(option.ToString());
+                rendererContext.CloseElement();
+            }
+            rendererContext.CloseElement();
         }
 
         public override bool CanRender(GridRendererContext rendererContext)

@@ -1,4 +1,5 @@
-﻿using Blazor.FlexGrid.Components.Renderers.FormInputs;
+﻿using Blazor.FlexGrid.Components.Configuration.MetaData;
+using Blazor.FlexGrid.Components.Renderers.FormInputs;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -43,15 +44,17 @@ namespace Blazor.FlexGrid.Components.Renderers.CreateItemForm.Layouts
         {
             return builder =>
             {
-                builder
+
+                    builder
                     .OpenElement(HtmlTagNames.Div, "col-sm-6")
                     .OpenElement(HtmlTagNames.Label, createItemRendererContext.CreateFormCssClasses.FieldName)
                     .AddContent(field.Name)
                     .CloseElement();
 
-                formInputRendererBuilder.BuildRendererTree(createItemRendererContext, field)?.Invoke(builder);
+                    formInputRendererBuilder.BuildRendererTree(createItemRendererContext, field)?.Invoke(builder);
 
-                builder.CloseElement();
+                    builder.CloseElement();
+
             };
         }
     }

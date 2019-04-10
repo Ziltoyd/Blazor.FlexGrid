@@ -33,12 +33,25 @@ namespace Blazor.FlexGrid.Components.Renderers.CreateItemForm.Layouts
             IFormInputRendererTreeProvider formInputRendererTreeProvider)
         {
             createItemRendererContext.ActualColumnName = field.Name;
-            var inputBuilder = formInputRendererTreeProvider.GetFormInputRendererTreeBuilder(field.GetMemberType());
 
-            return builder =>
+            try
             {
-                BuildFieldRendererTree(field, createItemRendererContext, inputBuilder)?.Invoke(builder);
-            };
+
+                var inputBuilder = formInputRendererTreeProvider.GetFormInputRendererTreeBuilder(field.GetMemberType());
+
+
+                return builder =>
+                {
+                    BuildFieldRendererTree(field, createItemRendererContext, inputBuilder)?.Invoke(builder);
+                };
+            }
+            catch (Exception ex)
+            {
+                if (!createItemRendererContext.ViewModel.IsNotSupportedInputTypeSkipped)
+                    throw new Exception($"Problem for creating the field {field.Name} (Error message: {ex.Message})");
+                else
+                    return (builder) => { };
+            }
         }
 
         public virtual Action<IRendererTreeBuilder> BuildFieldRendererTree(
@@ -48,15 +61,18 @@ namespace Blazor.FlexGrid.Components.Renderers.CreateItemForm.Layouts
         {
             return builder =>
             {
-                builder
+                
+                    builder
                     .OpenElement(HtmlTagNames.Div, "form-group")
                     .OpenElement(HtmlTagNames.Label, createItemRendererContext.CreateFormCssClasses.FieldName)
                     .AddContent(field.Name)
                     .CloseElement();
 
-                formInputRendererBuilder.BuildRendererTree(createItemRendererContext, field)?.Invoke(builder);
 
-                builder.CloseElement();
+                    formInputRendererBuilder.BuildRendererTree(createItemRendererContext, field)?.Invoke(builder);
+
+                    builder.CloseElement();
+                
             };
         }
     }

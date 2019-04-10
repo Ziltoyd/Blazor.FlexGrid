@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Blazor.FlexGrid.DataSet.Options
 {
@@ -26,5 +28,8 @@ namespace Blazor.FlexGrid.DataSet.Options
                 return (int)Math.Ceiling((double)TotalItemsCount / PageSize);
             }
         }
+
+        public bool IsPageSizeEditable { get; set; } = true;
+        public IEnumerable<int> PageSizeOptions { get; set; } = new List<int> { 5, 10, 15, 20 };
     }
 }

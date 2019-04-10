@@ -50,7 +50,8 @@ namespace Blazor.FlexGrid.DataSet
             }
         }
 
-
+        public IColumnsOptions ColumnsOptions { get; set; } = new ColumnsOptions();
+        public ISearchOptions SearchOptions { get; set; }
 
         public MasterDetailTableDataSet(
             ITableDataSet tableDataSet,

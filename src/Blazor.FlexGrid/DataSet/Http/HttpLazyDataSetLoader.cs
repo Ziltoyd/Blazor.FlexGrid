@@ -78,6 +78,7 @@ namespace Blazor.FlexGrid.DataSet
             {
                 return httpClient.GetJsonAsync<LazyLoadingDataSetResult<TItem>>(dataUri);
                 
+
             }
             catch (Exception ex)
             {

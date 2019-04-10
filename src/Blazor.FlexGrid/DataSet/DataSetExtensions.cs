@@ -72,7 +72,7 @@ namespace Blazor.FlexGrid.DataSet
                 try
                 {
 
-                    var param = Expression.Parameter(typeof(TItem));
+                    /*var param = Expression.Parameter(typeof(TItem));
                     var propertyOrField = Expression.PropertyOrField(param, groupingOptions.GroupedProperty.Name);
 
                     var callToString = Expression.Call(propertyOrField,
@@ -82,9 +82,10 @@ namespace Blazor.FlexGrid.DataSet
 
                     Expression<Func<TItem, string>> keyExpression;
 
-                    if (CanAcceptNullValueExpression(propertyOrField.Type))
+                    Expression nullConstantExpr = propertyOrField.Type.TryGetNullValueExpression();
+                    if (nullConstantExpr != null)
                     {
-                        var test = Expression.Equal(propertyOrField, Expression.Constant(null, propertyOrField.Type));
+                        var test = Expression.Equal(propertyOrField, nullConstantExpr);
                         var returnIfTrue = Expression.Return(callExprReturnLabel, Expression.Constant(null, typeof(string)));
                         var returnIfFalse = Expression.Return(callExprReturnLabel, callToString);
                         var callAndNullCheckExpr = Expression.IfThenElse(
@@ -98,7 +99,10 @@ namespace Blazor.FlexGrid.DataSet
                     else
                     {
                         keyExpression = Expression.Lambda<Func<TItem, string>>(callToString, param);
-                    }
+                    }*/
+
+                    var param = Expression.Parameter(typeof(TItem));
+                    var keyExpression = StringifiedPropertyOrField<TItem>(param, groupingOptions.GroupedProperty.Name, null);
 
                     return source.GroupBy(keyExpression)
                                 .Select(grp => new GroupItem<TItem>(grp.Key, grp));
@@ -117,16 +121,95 @@ namespace Blazor.FlexGrid.DataSet
 
         }
 
-        private static bool CanAcceptNullValueExpression(Type type)
+        /// <summary>
+        /// Returns a lambda expression to access a property or field 
+        /// Which is returned as a string 
+        /// </summary>
+        /// <typeparam name="TParameter"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static Expression<Func<TParameter, string>> StringifiedPropertyOrField<TParameter>(ParameterExpression parameter, string propertyName, string defaultValue)
+        {
+            return (Expression<Func<TParameter, string>>)StringifiedPropertyOrField(parameter, propertyName, defaultValue);
+            /*var param = Expression.Parameter(typeof(TParameter));
+            var propertyOrField = Expression.PropertyOrField(param, propertyName);
+
+            var callToString = Expression.Call(propertyOrField,
+                propertyOrField.Type.GetMethods().FirstOrDefault(m => m.Name == "ToString"));
+
+            var callExprReturnLabel = Expression.Label(typeof(string));
+
+            Expression<Func<TParameter, string>> lambdaExpression;
+
+            Expression nullConstantExpr = propertyOrField.Type.TryGetNullValueExpression();
+            if (nullConstantExpr != null)
+            {
+                var test = Expression.Equal(propertyOrField, nullConstantExpr);
+                var returnIfTrue = Expression.Return(callExprReturnLabel, Expression.Constant(null, typeof(string)));
+                var returnIfFalse = Expression.Return(callExprReturnLabel, callToString);
+                var callAndNullCheckExpr = Expression.IfThenElse(
+                    test, returnIfTrue, returnIfFalse);
+
+
+                var lambdaBodyBlock = Expression.Block(callAndNullCheckExpr,
+                    Expression.Label(callExprReturnLabel, Expression.Constant(null, typeof(string))));
+                lambdaExpression = Expression.Lambda<Func<TParameter, string>>(lambdaBodyBlock, param);
+            }
+            else
+            {
+                lambdaExpression = Expression.Lambda<Func<TParameter, string>>(callToString, param);
+            }
+
+            return lambdaExpression;*/
+        }
+
+        public static LambdaExpression StringifiedPropertyOrField(ParameterExpression parameter, string propertyName, string defaultValue)
+        {
+            Type parameterType = parameter.Type;
+            var param = parameter;
+            var propertyOrField = Expression.PropertyOrField(param, propertyName);
+
+            var callToString = Expression.Call(propertyOrField,
+                propertyOrField.Type.GetMethods().FirstOrDefault(m => m.Name == "ToString"));
+
+            var callExprReturnLabel = Expression.Label(typeof(string));
+
+            LambdaExpression lambdaExpression;
+
+            Expression nullConstantExpr = propertyOrField.Type.TryGetNullValueExpression();
+            if (nullConstantExpr != null)
+            {
+                var test = Expression.Equal(propertyOrField, nullConstantExpr);
+                var returnIfTrue = Expression.Return(callExprReturnLabel, Expression.Constant(defaultValue, typeof(string)));
+                var returnIfFalse = Expression.Return(callExprReturnLabel, callToString);
+                var callAndNullCheckExpr = Expression.IfThenElse(
+                    test, returnIfTrue, returnIfFalse);
+
+
+                var lambdaBodyBlock = Expression.Block(callAndNullCheckExpr,
+                    Expression.Label(callExprReturnLabel, Expression.Constant(defaultValue, typeof(string))));
+                lambdaExpression = Expression.Lambda(lambdaBodyBlock, param);
+            }
+            else
+            {
+                lambdaExpression = Expression.Lambda(callToString, param);
+            }
+
+            return lambdaExpression;
+        }
+
+        public static ConstantExpression TryGetNullValueExpression(this Type type)
         {
             try
             {
-                Expression.Constant(null, type);
-                return true;
+                return Expression.Constant(null, type);
+                
             }
             catch
             {
-                return false;
+                return null;
             }
         }
 

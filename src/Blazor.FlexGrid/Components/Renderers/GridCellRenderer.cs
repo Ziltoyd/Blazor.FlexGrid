@@ -28,7 +28,7 @@ namespace Blazor.FlexGrid.Components.Renderers
         {
             rendererContext.OpenElement(HtmlTagNames.TableColumn, rendererContext.CssClasses.TableCell);
 
-            
+
                 if (!rendererContext.IsActualItemEdited)
                 {
                            var localActualItem = rendererContext.ActualItem;

@@ -1,4 +1,7 @@
-﻿namespace Blazor.FlexGrid.DataSet.Options
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Blazor.FlexGrid.DataSet.Options
 {
     public interface IPagingOptions
     {
@@ -13,5 +16,9 @@
         bool IsFirstPage { get; }
 
         bool IsLastPage { get; }
+
+        bool IsPageSizeEditable { get; set; }
+
+        IEnumerable<int> PageSizeOptions { get; set; } 
     }
 }

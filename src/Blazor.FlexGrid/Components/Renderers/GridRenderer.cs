@@ -1,4 +1,5 @@
-﻿using Blazor.FlexGrid.Permission;
+﻿using Blazor.FlexGrid.DataSet;
+using Blazor.FlexGrid.Permission;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -26,11 +27,16 @@ namespace Blazor.FlexGrid.Components.Renderers
                 gridPartRenderersBefore.ForEach(renderer => renderer.BuildRendererTree(rendererContext, permissionContext));
 
                 rendererContext.OpenElement(HtmlTagNames.Div, "table-wrapper");
-                rendererContext.OpenElement(HtmlTagNames.Table, rendererContext.CssClasses.Table);
 
-                gridPartRenderers.ForEach(renderer => renderer.BuildRendererTree(rendererContext, permissionContext));
+                if (rendererContext.TableDataSet.HasItems())
+                {
+                    rendererContext.OpenElement(HtmlTagNames.Table, rendererContext.CssClasses.Table);
 
-                rendererContext.CloseElement(); // Close table
+                    gridPartRenderers.ForEach(renderer => renderer.BuildRendererTree(rendererContext, permissionContext));
+
+                    rendererContext.CloseElement(); // Close table
+
+                }
 
                 gridPartRenderersAfter.ForEach(renderer => renderer.BuildRendererTree(rendererContext, permissionContext));
 

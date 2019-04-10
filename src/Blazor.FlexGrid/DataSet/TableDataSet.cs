@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Blazor.FlexGrid.DataSet
@@ -35,6 +36,10 @@ namespace Blazor.FlexGrid.DataSet
 
 
         public IEnumerable<GroupItem> GroupedItems { get; set; }
+
+        public IColumnsOptions ColumnsOptions { get; set; } = new ColumnsOptions();
+
+        public ISearchOptions SearchOptions { get; set; } = new SearchOptions();
 
         public TableDataSet(IQueryable<TItem> source)
         {
@@ -140,14 +145,31 @@ namespace Blazor.FlexGrid.DataSet
 
         private void LoadFromQueryableSource()
         {
-            PageableOptions.TotalItemsCount = ApplyDeletedConditionToQueryable(source).Count();
+            var sourceAfterSearch = ApplyQuickSearchToQueryable(source);
+
+            PageableOptions.TotalItemsCount = ApplyDeletedConditionToQueryable(sourceAfterSearch).Count();
+
+            
             if (!GroupingOptions.IsGroupingActive)
             {
-                Items = ApplyFiltersToQueryable(source).ToList();
+                Items = ApplyFiltersToQueryable(sourceAfterSearch).ToList();
             }
             else
             {
-                GroupedItems = ApplyFiltersWithGroupingToQueryable(source);
+                GroupedItems = ApplyFiltersWithGroupingToQueryable(sourceAfterSearch);
+            }
+        }
+
+        private IQueryable<TItem> ApplyQuickSearchToQueryable(IQueryable<TItem> queryable)
+        {
+            if (string.IsNullOrEmpty(SearchOptions.Keyword))
+                return queryable;
+            else
+            {
+
+                var query = SearchOptions.QuickSearchFilter(queryable);
+                                                     
+                return query;
             }
         }
 

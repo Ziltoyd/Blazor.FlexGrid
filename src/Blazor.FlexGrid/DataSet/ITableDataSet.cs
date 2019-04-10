@@ -1,6 +1,9 @@
 ﻿using Blazor.FlexGrid.Components.Events;
 using Blazor.FlexGrid.Components.Renderers;
+using Blazor.FlexGrid.DataSet.Options;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Blazor.FlexGrid.DataSet
 {
@@ -12,8 +15,9 @@ namespace Blazor.FlexGrid.DataSet
     {
         GridViewEvents GridViewEvents { get; }
 
-        
+        IColumnsOptions ColumnsOptions { get; set; }
 
+        ISearchOptions SearchOptions { get; set; }
 
     }
 }

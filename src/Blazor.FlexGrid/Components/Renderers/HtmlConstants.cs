@@ -41,6 +41,7 @@
         public const string Id = "id";
         public const string AriaHidden = "aria-hidden";
         public const string Style = "style";
+        public const string Checked = "checked";
     }
 
     public class HtmlJSEvents

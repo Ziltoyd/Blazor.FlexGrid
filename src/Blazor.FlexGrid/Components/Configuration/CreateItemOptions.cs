@@ -17,6 +17,8 @@ namespace Blazor.FlexGrid.Components.Configuration
         public Type OutputDtoType { get; set; }
 
         public Func<ICurrentUserPermission, bool> CreatePermissionRestriction { get; set; } = perm => true;
+
+        public bool IsNotSupportedInputTypeSkipped { get; set; } = false;
     }
 
     public class NullCreateItemOptions : CreateItemOptions

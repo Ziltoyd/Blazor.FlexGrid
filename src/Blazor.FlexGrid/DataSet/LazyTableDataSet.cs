@@ -42,7 +42,8 @@ namespace Blazor.FlexGrid.DataSet
         public IGroupingOptions GroupingOptions { get; set; } = new GroupingOptions();
 
         public IEnumerable<GroupItem> GroupedItems { get; set; }
-
+        public IColumnsOptions ColumnsOptions { get; set; } = new ColumnsOptions();
+        public ISearchOptions SearchOptions { get; set; }
 
         public LazyTableDataSet(ILazyDataSetLoader<TItem> lazyDataSetLoader, ILazyDataSetItemManipulator<TItem> lazyDataSetItemSaver)
         {
